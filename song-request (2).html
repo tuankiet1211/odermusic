@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sảnh Yêu Cầu — Đặt Bài Hát</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,600&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep: #1a1130;
+    --bg-card: #120b22;
+    --bg-card-2: #201533;
+    --amber: #ffb84d;
+    --pink: #ff6f91;
+    --paper: #f5f0e8;
+    --ink: #241833;
+    --text: #f2ecf9;
+    --text-dim: #a998c2;
+    --line: rgba(245,240,232,0.14);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(255,184,77,0.16), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 10%, rgba(255,111,145,0.14), transparent 55%),
+      var(--bg-deep);
+    color:var(--text);
+    font-family:'Work Sans', sans-serif;
+    min-height:100vh;
+    padding:0 0 80px;
+  }
+  header{
+    text-align:center;
+    padding:64px 20px 40px;
+    position:relative;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.28em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin-bottom:18px;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-size:clamp(38px, 6vw, 64px);
+    margin:0;
+    line-height:1.05;
+    letter-spacing:-0.01em;
+  }
+  h1 em{
+    font-style:italic;
+    font-weight:500;
+    color:var(--pink);
+  }
+  .sub{
+    color:var(--text-dim);
+    font-size:16px;
+    max-width:480px;
+    margin:18px auto 0;
+    line-height:1.6;
+  }
+
+  .vinyl{
+    width:64px;height:64px;
+    margin:0 auto 22px;
+    border-radius:50%;
+    background:
+      radial-gradient(circle at center, var(--amber) 0 6px, var(--ink) 7px 9px, transparent 10px),
+      repeating-radial-gradient(circle at center, #2a1e40 0 3px, #1c1230 3px 6px);
+    box-shadow: 0 0 0 1px var(--line);
+    animation: spin 6s linear infinite;
+  }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce){ .vinyl{ animation:none; } }
+
+  main{
+    max-width:1080px;
+    margin:0 auto;
+    padding:0 24px;
+    display:grid;
+    grid-template-columns: 380px 1fr;
+    gap:32px;
+    align-items:start;
+  }
+  @media (max-width:860px){
+    main{ grid-template-columns:1fr; }
+  }
+
+  /* --- Ticket / request form --- */
+  .ticket{
+    background:var(--paper);
+    color:var(--ink);
+    border-radius:14px;
+    padding:30px 26px 26px;
+    position:relative;
+    box-shadow: 0 24px 50px -20px rgba(0,0,0,0.6);
+  }
+  .ticket::before, .ticket::after{
+    content:"";
+    position:absolute;
+    left:0; right:0;
+    height:16px;
+    background:
+      radial-gradient(circle 8px at 0 0, transparent 8px, var(--bg-deep) 8.5px) 0 0/24px 16px repeat-x;
+  }
+  .ticket::before{ top:-1px; transform:rotate(180deg); }
+  .ticket::after{ bottom:-1px; }
+  .ticket-label{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:#8a7a5c;
+    margin-bottom:4px;
+  }
+  .ticket h2{
+    font-family:'Fraunces', serif;
+    font-size:24px;
+    margin:0 0 20px;
+  }
+  label{
+    display:block;
+    font-size:12px;
+    font-family:'JetBrains Mono', monospace;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:#6b5d47;
+    margin:16px 0 6px;
+  }
+  input[type=text]{
+    width:100%;
+    padding:11px 12px;
+    border:1.5px solid #d8cdb4;
+    border-radius:7px;
+    background:#fffdf8;
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    font-size:15px;
+  }
+  input[type=text]:focus{
+    outline:2px solid var(--pink);
+    outline-offset:1px;
+    border-color:var(--pink);
+  }
+  input.invalid{
+    border-color:var(--pink);
+    background:#fff5f7;
+  }
+  .field-error{
+    display:none;
+    font-size:12px;
+    color:#c23a5a;
+    font-family:'JetBrains Mono', monospace;
+    margin-top:6px;
+  }
+  .field-error.show{ display:block; }
+  .stub-line{
+    border-top:1.5px dashed #cabf9f;
+    margin:22px 0 16px;
+  }
+  button.submit{
+    width:100%;
+    padding:13px;
+    border:none;
+    border-radius:8px;
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'Work Sans', sans-serif;
+    font-weight:600;
+    font-size:15px;
+    cursor:pointer;
+    transition:transform .15s ease, background .15s ease;
+  }
+  button.submit:hover{ background:#3a2a54; transform:translateY(-1px); }
+  button.submit:active{ transform:translateY(0); }
+  .hint{
+    font-size:12px;
+    color:#8a7a5c;
+    margin-top:12px;
+    line-height:1.5;
+  }
+  .toast{
+    margin-top:14px;
+    font-size:13px;
+    font-family:'JetBrains Mono', monospace;
+    color:#2f7a4d;
+    display:none;
+  }
+  .toast.show{ display:block; }
+
+  /* --- Right column --- */
+  .panel{
+    background:var(--bg-card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:22px 24px 26px;
+    margin-bottom:24px;
+  }
+  .panel-head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom:6px;
+  }
+  .panel-head h3{
+    font-family:'Fraunces', serif;
+    font-size:20px;
+    margin:0;
+    font-weight:600;
+  }
+  .count{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    color:var(--text-dim);
+  }
+  .panel-desc{
+    font-size:13px;
+    color:var(--text-dim);
+    margin-bottom:18px;
+  }
+
+  .row{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:14px 0;
+    border-top:1px solid var(--line);
+  }
+  .row:first-of-type{ border-top:none; }
+  .row-idx{
+    font-family:'JetBrains Mono', monospace;
+    color:var(--amber);
+    font-size:13px;
+    width:26px;
+    flex-shrink:0;
+  }
+  .row-info{ flex:1; min-width:0; }
+  .row-title{
+    font-weight:600;
+    font-size:15px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .row-meta{
+    font-size:12px;
+    color:var(--text-dim);
+    margin-top:2px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .row-actions{ display:flex; gap:8px; flex-shrink:0; }
+  .btn{
+    border:none;
+    border-radius:6px;
+    padding:7px 12px;
+    font-family:'Work Sans', sans-serif;
+    font-size:13px;
+    font-weight:500;
+    cursor:pointer;
+  }
+  .btn-approve{ background:var(--amber); color:var(--ink); }
+  .btn-approve:hover{ filter:brightness(1.08); }
+  .btn-reject{ background:transparent; color:var(--pink); border:1px solid rgba(255,111,145,0.5); }
+  .btn-reject:hover{ background:rgba(255,111,145,0.1); }
+
+  .empty{
+    text-align:center;
+    color:var(--text-dim);
+    font-size:13px;
+    padding:26px 10px;
+    font-family:'JetBrains Mono', monospace;
+  }
+
+  .setlist-item{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:14px 0;
+    border-top:1px solid var(--line);
+  }
+  .setlist-item:first-of-type{ border-top:none; }
+  .num{
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    color:var(--pink);
+    width:26px;
+    flex-shrink:0;
+  }
+
+  /* admin toggle */
+  .admin-toggle{
+    position:fixed;
+    right:20px;
+    bottom:20px;
+    background:var(--bg-card-2);
+    border:1px solid var(--line);
+    color:var(--text-dim);
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    padding:9px 14px;
+    border-radius:20px;
+    cursor:pointer;
+    letter-spacing:0.04em;
+  }
+  .admin-toggle:hover{ color:var(--text); border-color:var(--amber); }
+  .admin-badge{
+    display:inline-block;
+    font-family:'JetBrains Mono', monospace;
+    font-size:10px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    background:rgba(255,184,77,0.15);
+    color:var(--amber);
+    border:1px solid rgba(255,184,77,0.4);
+    padding:3px 8px;
+    border-radius:20px;
+    margin-left:8px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="vinyl" aria-hidden="true"></div>
+  <div class="eyebrow">Sảnh yêu cầu bài hát</div>
+  <h1>Gửi bài, <em>chờ duyệt</em>,<br>rồi vang lên.</h1>
+  <p class="sub">Aanh Kiệt dz sẽ duyệt cho mn</p>
+  <img src="haha.jpeg" alt="">
+</header>
+
+<main>
+  <!-- Request ticket -->
+  <div class="ticket">
+    <div class="ticket-label">Vé yêu cầu #<span id="ticketNo">001</span></div>
+    <h2>Đặt bài hát</h2>
+    <form id="requestForm">
+      <label for="song">Tên bài hát</label>
+      <input type="text" id="song" placeholder="VD: Sóng gió" required>
+
+      <label for="artist">Password</label>
+      <input type="text" id="artist" placeholder="Nhập pass kiệtdzvcl" required>
+      <div class="field-error" id="artistError">Vui lòng nhập lại pass kiệtdzvcl.</div>
+
+      <label for="requester">Tên người gửi</label>
+      <input type="text" id="requester" placeholder="VD: Đỗ Văn Luyện" required>
+
+      <div class="stub-line"></div>
+      <button type="submit" class="submit">Gửi yêu cầu</button>
+      <div class="hint">Yêu cầu của bạn sẽ vào hàng chờ duyệt. Danh sách phát chỉ hiện các bài đã được duyệt.</div>
+      <div class="toast" id="toast">✓ Đã gửi! Đang chờ quản trị viên duyệt.</div>
+    </form>
+  </div>
+
+  <!-- Right side: admin queue + approved list -->
+  <div>
+    <div class="panel" id="adminPanel" style="display:none;">
+      <div class="panel-head">
+        <h3>Hàng chờ duyệt <span class="admin-badge">Admin</span></h3>
+        <span class="count" id="pendingCount">0</span>
+      </div>
+      <div class="panel-desc">Duyệt hoặc từ chối các yêu cầu gửi lên.</div>
+      <div id="pendingList"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Danh sách phát</h3>
+        <span class="count" id="approvedCount">0</span>
+      </div>
+      <div class="panel-desc">Các bài đã được duyệt, theo thứ tự yêu cầu.</div>
+      <div id="approvedList"></div>
+    </div>
+  </div>
+</main>
+
+<button class="admin-toggle" id="adminToggle">👁 Chế độ quản trị viên</button>
+
+<script>
+  // ---- In-memory state (resets on page reload; no backend) ----
+  let pending = [];
+  let approved = [];
+  let nextId = 1;
+  let isAdmin = false;
+
+  const form = document.getElementById('requestForm');
+  const toast = document.getElementById('toast');
+  const ticketNo = document.getElementById('ticketNo');
+  const pendingList = document.getElementById('pendingList');
+  const approvedList = document.getElementById('approvedList');
+  const pendingCount = document.getElementById('pendingCount');
+  const approvedCount = document.getElementById('approvedCount');
+  const adminPanel = document.getElementById('adminPanel');
+  const adminToggle = document.getElementById('adminToggle');
+
+  function pad(n){ return String(n).padStart(3,'0'); }
+
+  const artistInput = document.getElementById('artist');
+  const artistError = document.getElementById('artistError');
+  const REQUIRED_PASS = 'kiệtdzvcl';
+
+  function validateArtist(){
+    const value = artistInput.value.trim();
+    let message = '';
+    if(value === ''){
+      message = 'Vui lòng nhập lại pass kiệtdzvcl.';
+    } else if(value !== REQUIRED_PASS){
+      message = 'Sai pass. Vui lòng nhập lại pass kiệtdzvcl.';
+    }
+    if(message){
+      artistInput.classList.add('invalid');
+      artistError.textContent = message;
+      artistError.classList.add('show');
+      return false;
+    } else {
+      artistInput.classList.remove('invalid');
+      artistError.classList.remove('show');
+      return true;
+    }
+  }
+
+  artistInput.addEventListener('blur', validateArtist);
+  artistInput.addEventListener('input', function(){
+    if(artistInput.classList.contains('invalid')) validateArtist();
+  });
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    const song = document.getElementById('song').value.trim();
+    const artist = document.getElementById('artist').value.trim();
+    const requester = document.getElementById('requester').value.trim();
+
+    const artistOk = validateArtist();
+    if(!song || !requester || !artistOk){
+      if(!artistOk) artistInput.focus();
+      return;
+    }
+
+    pending.push({ id: nextId++, song, artist, requester, time: new Date() });
+
+    form.reset();
+    artistInput.classList.remove('invalid');
+    artistError.classList.remove('show');
+    toast.classList.add('show');
+    setTimeout(()=> toast.classList.remove('show'), 2600);
+    ticketNo.textContent = pad(nextId);
+
+    render();
+  });
+
+  adminToggle.addEventListener('click', function(){
+    if(!isAdmin){
+      const pass = prompt('Nhập mật khẩu quản trị viên:');
+      if(pass === null) return;
+      if(pass !== 'admin123'){
+        alert('Sai mật khẩu.');
+        return;
+      }
+      isAdmin = true;
+      adminPanel.style.display = 'block';
+      adminToggle.textContent = '✓ Đang ở chế độ quản trị';
+    } else {
+      isAdmin = false;
+      adminPanel.style.display = 'none';
+      adminToggle.textContent = '👁 Chế độ quản trị viên';
+    }
+  });
+
+  function approveItem(id){
+    const idx = pending.findIndex(p => p.id === id);
+    if(idx === -1) return;
+    const [item] = pending.splice(idx, 1);
+    approved.push(item);
+    render();
+  }
+
+  function rejectItem(id){
+    pending = pending.filter(p => p.id !== id);
+    render();
+  }
+
+  function timeAgo(date){
+    const mins = Math.max(0, Math.floor((Date.now() - date.getTime())/60000));
+    if(mins < 1) return 'vừa xong';
+    if(mins < 60) return mins + ' phút trước';
+    const hrs = Math.floor(mins/60);
+    return hrs + ' giờ trước';
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function render(){
+    pendingCount.textContent = pending.length;
+    approvedCount.textContent = approved.length;
+
+    // Pending
+    if(pending.length === 0){
+      pendingList.innerHTML = '<div class="empty">Không có yêu cầu nào đang chờ.</div>';
+    } else {
+      pendingList.innerHTML = pending.map((p, i) => `
+        <div class="row">
+          <div class="row-idx">${pad(p.id)}</div>
+          <div class="row-info">
+            <div class="row-title">${escapeHtml(p.song)}${p.artist ? ' — ' + escapeHtml(p.artist) : ''}</div>
+            <div class="row-meta">Gửi bởi ${escapeHtml(p.requester)} · ${timeAgo(p.time)}</div>
+          </div>
+          <div class="row-actions">
+            <button class="btn btn-approve" onclick="approveItem(${p.id})">Duyệt</button>
+            <button class="btn btn-reject" onclick="rejectItem(${p.id})">Từ chối</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Approved
+    if(approved.length === 0){
+      approvedList.innerHTML = '<div class="empty">Chưa có bài hát nào được duyệt. Hãy là người đầu tiên gửi yêu cầu!</div>';
+    } else {
+      approvedList.innerHTML = approved.map((a, i) => `
+        <div class="setlist-item">
+          <div class="num">${pad(i+1)}</div>
+          <div class="row-info">
+            <div class="row-title">${escapeHtml(a.song)}${a.artist ? ' — ' + escapeHtml(a.artist) : ''}</div>
+            <div class="row-meta">Yêu cầu bởi ${escapeHtml(a.requester)}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+  }
+
+  render();
+</script>
+
+</body>
+</html>
